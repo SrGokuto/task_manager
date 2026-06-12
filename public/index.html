@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task Manager - Gestor de Tareas</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-content">
+        <div class="logo">
+          <h1>📝 Task Manager</h1>
+        </div>
+        <div class="header-actions">
+          <span id="userEmail" class="user-email"></span>
+          <button id="logoutBtn" class="btn btn-logout">Cerrar sesión</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <nav class="nav-menu">
+          <button class="nav-item active" data-view="dashboard">
+            📊 Dashboard
+          </button>
+          <button class="nav-item" data-view="tasks">
+            📋 Mis Tareas
+          </button>
+        </nav>
+      </aside>
+
+      <!-- Content Area -->
+      <section class="content">
+        <!-- Dashboard View -->
+        <div id="dashboardView" class="view active">
+          <h2>Dashboard</h2>
+          
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon">📌</div>
+              <div class="stat-info">
+                <h3>Tareas Totales</h3>
+                <p class="stat-number" id="totalTasks">0</p>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon">⏳</div>
+              <div class="stat-info">
+                <h3>Pendientes</h3>
+                <p class="stat-number" id="pendingTasks">0</p>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon">🔄</div>
+              <div class="stat-info">
+                <h3>En Progreso</h3>
+                <p class="stat-number" id="inProgressTasks">0</p>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon">✅</div>
+              <div class="stat-info">
+                <h3>Completadas</h3>
+                <p class="stat-number" id="completedTasks">0</p>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-icon">🔴</div>
+              <div class="stat-info">
+                <h3>Alta Prioridad</h3>
+                <p class="stat-number" id="highPriorityTasks">0</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="chart-container">
+            <h3>Progreso de Tareas</h3>
+            <div class="progress-bars">
+              <div class="progress-item">
+                <label>Completadas</label>
+                <div class="progress-bar">
+                  <div class="progress-fill completed" id="completedProgress"></div>
+                </div>
+                <span class="progress-text" id="completedPercent">0%</span>
+              </div>
+              <div class="progress-item">
+                <label>En Progreso</label>
+                <div class="progress-bar">
+                  <div class="progress-fill in-progress" id="inProgressProgress"></div>
+                </div>
+                <span class="progress-text" id="inProgressPercent">0%</span>
+              </div>
+              <div class="progress-item">
+                <label>Pendientes</label>
+                <div class="progress-bar">
+                  <div class="progress-fill pending" id="pendingProgress"></div>
+                </div>
+                <span class="progress-text" id="pendingPercent">0%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tasks View -->
+        <div id="tasksView" class="view">
+          <div class="tasks-header">
+            <h2>Mis Tareas</h2>
+            <button id="newTaskBtn" class="btn btn-primary">+ Nueva Tarea</button>
+          </div>
+
+          <!-- Search and Filter -->
+          <div class="filters-container">
+            <input 
+              type="text" 
+              id="searchInput" 
+              class="search-input" 
+              placeholder="🔍 Buscar tareas..."
+            >
+            
+            <select id="statusFilter" class="filter-select">
+              <option value="">Todos los Estados</option>
+              <option value="pendiente">Pendiente</option>
+              <option value="en-progreso">En Progreso</option>
+              <option value="completada">Completada</option>
+            </select>
+
+            <select id="priorityFilter" class="filter-select">
+              <option value="">Todas las Prioridades</option>
+              <option value="alta">Alta</option>
+              <option value="media">Media</option>
+              <option value="baja">Baja</option>
+            </select>
+          </div>
+
+          <!-- Tasks List -->
+          <div id="tasksList" class="tasks-list">
+            <!-- Las tareas se cargarán aquí -->
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Modal para crear/editar tarea -->
+  <div id="taskModal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modalTitle">Nueva Tarea</h3>
+        <button class="modal-close">&times;</button>
+      </div>
+
+      <form id="taskForm" class="task-form">
+        <div class="form-group">
+          <label for="taskTitle">Título *</label>
+          <input 
+            type="text" 
+            id="taskTitle" 
+            placeholder="Ingresa el título de la tarea"
+            maxlength="100"
+            required
+          >
+          <small id="titleError" class="error-message"></small>
+        </div>
+
+        <div class="form-group">
+          <label for="taskDescription">Descripción</label>
+          <textarea 
+            id="taskDescription" 
+            placeholder="Ingresa la descripción de la tarea"
+            rows="4"
+          ></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="taskPriority">Prioridad</label>
+            <select id="taskPriority">
+              <option value="baja">Baja</option>
+              <option value="media" selected>Media</option>
+              <option value="alta">Alta</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="taskStatus">Estado</label>
+            <select id="taskStatus">
+              <option value="pendiente" selected>Pendiente</option>
+              <option value="en-progreso">En Progreso</option>
+              <option value="completada">Completada</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group" id="assignedToGroup">
+          <label for="assignedTo">Asignar a</label>
+          <select id="assignedTo">
+            <option value="">No asignado</option>
+          </select>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Guardar Tarea</button>
+          <button type="button" class="btn btn-secondary" id="cancelBtn">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Alert Messages -->
+  <div id="alertContainer" class="alert-container"></div>
+
+  <script src="/js/utils.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/app.js"></script>
+</body>
+</html>
